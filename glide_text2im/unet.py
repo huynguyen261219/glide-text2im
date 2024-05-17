@@ -190,11 +190,15 @@ class ResBlock(TimestepBlock):
         else:
             h = self.in_layers(x)
         emb_out = self.emb_layers(emb).type(h.dtype)
+        print(f"emb_out shape: {emb_out.shape}")
         while len(emb_out.shape) < len(h.shape):
             emb_out = emb_out[..., None]
         if self.use_scale_shift_norm:
             out_norm, out_rest = self.out_layers[0], self.out_layers[1:]
             scale, shift = th.chunk(emb_out, 2, dim=1)
+            print(f"h shape: {h.shape}")
+            print(f"Scale shape: {scale.shape}")
+            print(f"Shift shape: {shift.shape}")
             h = out_norm(h) * (1 + scale) + shift
             h = out_rest(h)
         else:
